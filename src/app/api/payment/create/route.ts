@@ -19,18 +19,12 @@ export async function POST(request: Request) {
             );
         }
 
-        console.log("[payment/create] MP token set:", Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN));
-
         const pixData = await createPixPayment(sessionId, 1.5);
         return NextResponse.json(pixData);
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        // Expose error detail to help debug — remove after fixing
         const cause = (error as { cause?: unknown })?.cause;
-        console.error("[/api/payment/create] Error:", message, cause);
-        return NextResponse.json(
-            { error: "Erro ao criar cobrança Pix.", detail: message, cause: JSON.stringify(cause) },
-            { status: 500 }
-        );
+        console.error("[/api/payment/create] Error:", message, JSON.stringify(cause));
+        return NextResponse.json({ error: "Erro ao criar cobrança Pix." }, { status: 500 });
     }
 }
