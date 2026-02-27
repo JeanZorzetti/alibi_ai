@@ -1,8 +1,18 @@
 /**
  * Payment helper — Mercado Pago Pix integration (SDK v2).
  *
- * Docs: https://www.mercadopago.com.br/developers/pt/docs/checkout-api/integration-configuration/payments-via-pix
- * Webhook: https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
+ * ERROR 13253 "Error in Financial Identity Use Case" means:
+ *   A) You're using a TEST token → payer email must be a MP test user email
+ *      (format: test_user_XXXXX@testuser.com)
+ *      Create test users at: https://www.mercadopago.com.br/developers/panel/app
+ *      → Your app → Test users → Create test user
+ *
+ *   B) You're using a PRODUCTION token → your MP account needs:
+ *      1. CPF/CNPJ verified (KYC completed)
+ *      2. Pix key registered on the account
+ *
+ * Set MERCADOPAGO_TEST_MODE=true and MERCADOPAGO_TEST_PAYER_EMAIL in .env
+ * to use sandbox mode with proper test credentials.
  */
 
 import { MercadoPagoConfig, Payment } from "mercadopago";
@@ -34,41 +44,40 @@ export async function createPixPayment(
     try {
         const payment = getMPClient();
 
-        // Minimum required body for Pix in Mercado Pago:
-        // - transaction_amount (number)
-        // - payment_method_id: "pix"
-        // - payer.email (any valid email)
-        // NO CPF/identification needed for Pix < R$10k
+        // For sandbox/test mode: use a test payer email
+        // For production: use a generic email (no PII needed for Pix)
+        const isTestMode = process.env.MERCADOPAGO_TEST_MODE === "true";
+        const payerEmail = isTestMode
+            ? (process.env.MERCADOPAGO_TEST_PAYER_EMAIL ?? "test_user_123456789@testuser.com")
+            : "pagador@email.com";
+
         const body = {
             transaction_amount: amountBRL,
             payment_method_id: "pix",
             description: "Alibi Corporativo 3000",
             payer: {
-                email: "pagador@email.com",
+                email: payerEmail,
             },
             metadata: {
                 session_id: sessionId,
             },
         };
 
-        console.log("[Payment] Creating Pix charge, body:", JSON.stringify(body));
+        console.log("[Payment] Creating Pix. Test mode:", isTestMode, "Payer:", payerEmail);
 
         const result = await payment.create({
             body,
             requestOptions: {
-                // Use timestamp-based key to avoid idempotency conflicts on retries
                 idempotencyKey: `${sessionId}-${Date.now()}`,
             },
         });
 
-        console.log("[Payment] MP result status:", result.status);
-        console.log("[Payment] MP result id:", result.id);
+        console.log("[Payment] Status:", result.status, "ID:", result.id);
 
         const txInfo = result.point_of_interaction?.transaction_data;
 
         if (!txInfo?.qr_code || !result.id) {
             const errDetail = JSON.stringify(result);
-            console.error("[Payment] Missing QR code in response:", errDetail);
             throw new Error(`MP response missing QR data. Status: ${result.status}. Detail: ${errDetail}`);
         }
 
@@ -79,11 +88,10 @@ export async function createPixPayment(
             expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
         };
     } catch (error: unknown) {
-        // Log the full MP error for debugging
-        if (error && typeof error === "object" && "cause" in error) {
-            console.error("[Payment] MP error cause:", JSON.stringify((error as { cause: unknown }).cause));
-        }
-        console.error("[Payment] Full error:", error);
+        const cause = (error as { cause?: unknown })?.cause;
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("[Payment] Error:", message);
+        console.error("[Payment] Cause:", JSON.stringify(cause));
         throw error;
     }
 }
@@ -101,7 +109,6 @@ export function validateWebhookSignature(
 
     const xSignature = headers.get("x-signature");
     const xRequestIdHeader = xRequestId ?? headers.get("x-request-id") ?? "";
-
     if (!xSignature) return false;
 
     const parts = Object.fromEntries(
