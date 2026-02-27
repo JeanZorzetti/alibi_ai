@@ -1,6 +1,6 @@
 import type { BlogPost } from "./blog-types";
+import { EXTRA_BLOG_POSTS } from "./blog-posts-extra";
 export type { BlogPost };
-
 
 export const BLOG_POSTS: BlogPost[] = [
     {
@@ -426,8 +426,6 @@ Reforce a disposição para corrigir.
 Para situações que requerem justificativas mais elaboradas e tecnicamente convincentes, o **Álibi Corporativo 3000** gera textos corporativos completos automaticamente.`,
     },
 ];
-
-import { EXTRA_BLOG_POSTS } from "./blog-posts-extra";
 
 export const ALL_POSTS: BlogPost[] = [...BLOG_POSTS, ...EXTRA_BLOG_POSTS];
 
