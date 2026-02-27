@@ -1,26 +1,135 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors */
+  --color-primary: #6cf20d;
+  --color-alert-red: #ff2a2a;
+  --color-bg-light: #f7f8f5;
+  --color-bg-dark: #172210;
+  --color-brutalist-beige: #E0D8C0;
+  --color-brutalist-black: #131c0d;
+  --color-success-green: #008000;
+  --color-surface: #fafcf8;
+
+  /* Fonts */
+  --font-display: "Space Grotesk", monospace;
+  --font-mono: "Courier New", monospace;
+
+  /* Shadows */
+  --shadow-brutalist: 4px 4px 0px 0px #000000;
+  --shadow-brutalist-hover: 2px 2px 0px 0px #000000;
+  --shadow-brutalist-heavy: 8px 8px 0px 0px #000000;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------- Base ---------- */
+body {
+  font-family: var(--font-display);
+  background: var(--color-bg-light);
+  color: var(--color-brutalist-black);
+  min-height: 100vh;
+}
+
+/* ---------- Brutalist Utility Classes ---------- */
+.blur-text {
+  color: transparent;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.brutalist-border {
+  border: 2px solid black;
+}
+
+/* ---------- Animations ---------- */
+@keyframes typewriter-blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes glitch-horizontal {
+  0% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-3px);
+  }
+
+  40% {
+    transform: translateX(3px);
+  }
+
+  60% {
+    transform: translateX(-1px);
+  }
+
+  80% {
+    transform: translateX(1px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes matrix-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(108, 242, 13, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 20px 5px rgba(108, 242, 13, 0.2);
+  }
+}
+
+.animate-cursor-blink {
+  animation: typewriter-blink 1s step-end infinite;
+}
+
+.animate-glitch {
+  animation: glitch-horizontal 0.3s ease-in-out;
+}
+
+.animate-matrix-fade {
+  animation: matrix-fade-in 0.6s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ---------- Scrollbar (brutalist) ---------- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brutalist-black);
+  border: 1px solid var(--color-bg-light);
 }
