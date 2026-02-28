@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { ALIBI_CATEGORIES } from "@/lib/alibi-categories";
-import { getAllPostSlugs } from "@/lib/blog-posts";
+import { getAllPostSlugs } from "@/lib/blog-posts-all";
 
 const BASE_URL = "https://alibi.roilabs.com.br";
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ALL_POSTS, BLOG_CATEGORIES } from "@/lib/blog-posts";
+import { ALL_POSTS, BLOG_CATEGORIES } from "@/lib/blog-posts-all";
 
 export const metadata: Metadata = {
     title: "Blog — Dicas de Comunicação Corporativa | Álibi Corporativo 3000",

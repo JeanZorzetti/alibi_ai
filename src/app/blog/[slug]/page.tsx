@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getPostBySlug, getAllPostSlugs, ALL_POSTS } from "@/lib/blog-posts";
+import { getPostBySlug, getAllPostSlugs, ALL_POSTS } from "@/lib/blog-posts-all";
 
 export function generateStaticParams() {
     return getAllPostSlugs().map((slug) => ({ slug }));
