@@ -5,8 +5,9 @@ export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function Image({ params }: { params: { slug: string } }) {
-    const post = getPostBySlug(params.slug);
+export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const post = getPostBySlug(slug);
     const title = post?.title ?? "Blog — Álibi Corporativo 3000";
     const category = post?.category ?? "Dicas Corporativas";
 
@@ -51,7 +52,7 @@ export default function Image({ params }: { params: { slug: string } }) {
                         display: "flex",
                     }}
                 >
-                    alibi.roilabs.com.br/blog/{params.slug}
+                    alibi.roilabs.com.br/blog/{slug}
                 </div>
             </div>
         ),

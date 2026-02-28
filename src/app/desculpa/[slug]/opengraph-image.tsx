@@ -5,8 +5,9 @@ export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function Image({ params }: { params: { slug: string } }) {
-    const cat = ALIBI_CATEGORIES.find((c) => c.slug === params.slug);
+export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const cat = ALIBI_CATEGORIES.find((c) => c.slug === slug);
     const headline = cat?.headline?.split("\n")[0] ?? "Gerar Desculpa Corporativa";
     const label = cat?.title?.split(" ").slice(0, 4).join(" ") ?? "Desculpa Profissional";
 
@@ -66,7 +67,7 @@ export default function Image({ params }: { params: { slug: string } }) {
                         display: "flex",
                     }}
                 >
-                    alibi.roilabs.com.br/desculpa/{params.slug}
+                    alibi.roilabs.com.br/desculpa/{slug}
                 </div>
             </div>
         ),

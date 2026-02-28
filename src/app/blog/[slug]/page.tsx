@@ -9,8 +9,13 @@ export function generateStaticParams() {
     return getAllPostSlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const post = getPostBySlug(params.slug);
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const { slug } = await params;
+    const post = getPostBySlug(slug);
     if (!post) return { title: "Não encontrado" };
 
     const url = `https://alibi.roilabs.com.br/blog/${post.slug}`;
@@ -29,8 +34,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-    const post = getPostBySlug(params.slug);
+export default async function BlogPost({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}) {
+    const { slug } = await params;
+    const post = getPostBySlug(slug);
     if (!post) notFound();
 
     const related = ALL_POSTS.filter((p) => p.category === post.category && p.slug !== post.slug).slice(0, 3);
