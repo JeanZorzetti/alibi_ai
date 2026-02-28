@@ -3,6 +3,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getPostBySlug, getAllPostSlugs, ALL_POSTS } from "@/lib/blog-posts-all";
 
+export const dynamicParams = true;
+
 export function generateStaticParams() {
     return getAllPostSlugs().map((slug) => ({ slug }));
 }
